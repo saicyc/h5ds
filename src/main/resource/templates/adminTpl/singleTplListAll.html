@@ -1,0 +1,159 @@
+<!doctype html>
+<html class="no-js" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+  <title>H5DS 后台系统</title>
+  <meta name="description" content="史上最强HTML5编辑器"/>
+  <meta name="keywords" content="index"/>
+  <!--公用的 css -->
+    <div th:replace="@{adminTpl/comm/comm}"></div>
+</head>
+<body th:inline="text">
+
+<div th:replace="@{adminTpl/comm/head}"></div>
+
+<div class="am-cf admin-main">
+  
+  <!-- sidebar start -->
+  <div th:replace="@{adminTpl/comm/nav}"></div>
+  
+ <!-- content start -->
+  <div class="admin-content">
+
+    <div class="am-cf am-padding">
+      <div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">模板管理</strong> / <small>用户模板</small></div>
+    </div>
+
+    <div class="am-g">
+      <div class="am-u-sm-12 am-u-md-8">
+        设置系统模板前，请先选择系统类型：
+          <span class="sys-moban-type" th:each="datas:${list}" th:value="${datas.id}" th:text="${datas.typeName}"></span>
+      </div>
+      <div class="am-u-sm-12 am-u-md-2 am-form">
+        <div class="am-form-group">
+          &nbsp;
+        </div>
+      </div>
+      <div class="am-u-sm-12 am-u-md-2 am-form">
+        <div class="am-input-group am-input-group-sm">
+          <input type="text" class="am-form-field" />
+          <span class="am-input-group-btn">
+            <button class="am-btn am-btn-default" style="padding: 10.5px 20px!important;" type="button">搜索</button>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <ul class="am-avg-lg-16 am-margin gallery-list single-tpl-list">
+      <li class="sitem" th:each="data:${page.returnList}" th:attr="data-id=${data.id}">
+        <a href="#">
+          <img class="am-img-thumbnail am-img-bdrs" style="width:145px; height:200px;" th:src="@{${data.fileUrl}==null?'/publicStatic/images/main1.jpg':${data.fileUrl}}" alt=""/>
+          <div class="gallery-desc">
+              <!-- <span>使用：1200次</span> -->
+              <div class="am-dropdown" style="float:right;" data-am-dropdown="data-am-dropdown">
+                <button class="am-btn am-btn-default am-btn-xs am-dropdown-toggle" data-am-dropdown-toggle="data-am-dropdown-toggle"><span class="am-icon-cog"></span> <span class="am-icon-caret-down"></span></button>
+                <ul class="am-dropdown-content">
+                  <!-- <li><a class="set-to-case" href="javascript:;">修改</a></li> -->
+                  <li><a class="app-setthis" href="javascript:;" th:attr="data-appid=${data.id}">设为系统模板</a></li>
+                  <li><a class="app-delthis" th:attr="data-appid=${data.id}" href="javascript:;">删除</a></li>
+                  <!-- <li><a href="javascript:;">预览</a></li> -->
+                </ul>
+              </div>
+              <br/>
+              by: <span th:text="${data.userName}"></span>
+          </div>
+        </a>
+      </li>
+    </ul>
+
+    <div class="am-cf">
+         <span style="margin-left:20px;">共  [[${page.totalApps}]] 条记录</span> 
+         <div class="page-list" style="float:right;">
+            <input id="totalPage" type="hidden" th:value="${page.totalPages}"/>
+            <input id="currentPage" type="hidden" th:value="${page.currentPage}"/>
+            <ul class="am-pagination" style="margin:0;">
+              <li class="" th:attr="class=${page.currentPage} == 0?'am-disabled':''"><a style="padding: 9px 12px; position: relative; top: 1px;" href="javascript:;">《</a></li>
+              <li class="page" th:each="data:${#numbers.sequence(1,page.totalPages)}" th:if="${page.totalPages}!=0"><a href="javascript:;"><i class="iconfont" th:text="${data}"></i></a></li>
+              <li class="" th:attr="class=${page.currentPage} == ${page.totalPages}?'am-disabled':''"><a style="padding: 9px 12px; position: relative; top: 1px;" href="javascript:;">》</a></li>
+            </ul>
+        </div>
+    </div>
+
+  </div>
+  <!-- content end -->
+
+	</div>
+	<!-- admin-main end -->
+   
+   <div th:replace="@{adminTpl/comm/foot}"></div>
+
+ <!--添加分类-->
+<div class="am-modal am-modal-no-btn" tabindex="-1" id="add-sourceType">
+  <div class="am-modal-dialog">
+    <div class="am-modal-hd">添加素材分类
+      <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close="data-am-modal-close">&times;</a>
+    </div>
+    <div class="am-modal-bd">
+        <input id="add-type-input" type="text" />
+        <button id="add-type-btn">添加</button>
+        <table>
+
+        </table>
+    </div>
+  </div>
+</div>
+
+ </body>
+<script th:inline="javascript">
+/*<![CDATA[>*/
+$(function(){
+
+    var total = [[${page.totalPages}]];
+    var current = [[${page.currentPage}]];
+    $(".am-pagination").on("click",".page",function(){
+      //console.log([[@{/app/findApps}]]+"?currentPage="+($(this).find("i").html()-1) );
+      window.location.href = [[@{/admin/findTemplates}]]+"?currentPage="+($(this).find("i").html()-1);
+    });
+    $(".am-pagination li").first().click(function(){
+      console.log(current);
+      if(current != 0){
+        current--;
+        window.location.href = [[@{/admin/findTemplates}]]+"?currentPage="+current;
+      }
+    });
+  $(".am-pagination li").last().click(function(){
+    console.log(current);
+    if(current < (total-1)){
+      current++;
+        window.location.href = [[@{/admin/findTemplates}]]+"?currentPage="+current;
+      }
+    });
+
+//默认选择第一个类型
+  $(".sys-moban-type").on('click', function(event) {
+       $(".sys-moban-type-active").removeClass().addClass('sys-moban-type');
+       $(this).removeClass().addClass('sys-moban-type-active');
+  });
+  $(".sys-moban-type").eq(0).trigger("click");
+
+  //设为案例
+  $(document).on('click', '.app-setthis', function(event) {
+       var id = $(this).attr("data-appid");
+       var tid = $(".sys-moban-type-active").attr("value");
+       $.ajax({
+        url:'/admin/setSystemTemplates',
+        type:'post',
+        data:{templateId:id,templateTypeId:tid},
+        success:function(msg){
+          console.log(msg);
+          if(msg){
+            alert("添加成功！");
+            location.reload();
+          }
+        }
+      });//end ajax
+  });
+
+});
+/*]]>*/   
+</script>
+</html>

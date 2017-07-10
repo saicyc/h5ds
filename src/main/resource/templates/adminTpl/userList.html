@@ -1,0 +1,160 @@
+<!doctype html>
+<html class="no-js" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+	<title>H5DS 后台系统</title>
+	<meta name="description" content="史上最强HTML5编辑器"/>
+	<meta name="keywords" content="index"/>
+	<!--公用的 css -->
+    <div th:replace="@{adminTpl/comm/comm}"></div>
+</head>
+<body th:inline="text">
+
+<div th:replace="@{adminTpl/comm/head}"></div>
+
+<div class="am-cf admin-main">
+  
+  <!-- sidebar start -->
+  <div th:replace="@{adminTpl/comm/nav}"></div>
+
+<!-- content start -->
+  <div class="admin-content">
+
+    <div class="am-cf am-padding">
+      <div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">会员管理</strong> / <small>会员列表</small></div>
+    </div>
+
+    <div class="am-g">
+      <div class="am-u-sm-12">
+        <table class="am-table am-table-bd am-table-striped admin-content-table">
+          <tr>
+            <th>ID</th>
+            <th>昵称</th>
+            <th>邮箱</th>
+            <th>qq</th>
+            <th>电话</th>
+            <th>应用数量</th>
+            <th>管理</th>
+          </tr>
+          
+          <tr th:each="data:${page.returnList}">
+            <td th:text="${data.id}"></td>
+            <td th:text="${data.nike}"></td>
+            <td th:text="${data.email}"></td>
+            <td th:text="${data.qq}"></td>
+            <td th:text="${data.phone}"></td>
+            <td><a href="#"><span th:text="${data.appNum}" class="am-badge am-badge-danger"></span></a></td>
+            <td>
+              <div class="am-dropdown" data-am-dropdown="data-am-dropdown">
+                <button class="am-btn am-btn-default am-btn-xs am-dropdown-toggle" data-am-dropdown-toggle="data-am-dropdown-toggle"><span class="am-icon-cog"></span> <span class="am-icon-caret-down"></span></button>
+                <ul class="am-dropdown-content">
+                  <li><a class="app-repassword" th:attr="data-id=${data.id}" data-id="" href="javascript:;">重置密码</a></li>
+                  <li><a class="app-deluser" th:attr="data-id=${data.id}" data-id="" href="javascript:;">删除用户</a></li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+          
+        </table>
+
+        <div class="am-cf">
+             <span>共  [[${page.totalApps}]] 条记录</span> 
+             <div class="page-list" style="float:right;">
+				<input id="totalPage" type="hidden" th:value="${page.totalPages}"/>
+				<input id="currentPage" type="hidden" th:value="${page.currentPage}"/>
+				<ul class="am-pagination" style="margin:0;">
+					<li class="" th:attr="class=${page.currentPage} == 0?'am-disabled':''"><a style="padding: 9px 12px; position: relative; top: 1px;" href="javascript:;">《</a></li>
+					<li class="page" th:each="data:${#numbers.sequence(1,page.totalPages)}" th:if="${page.totalPages}!=0"><a href="javascript:;"><i class="iconfont" th:text="${data}"></i></a></li>
+					<li class="" th:attr="class=${page.currentPage} == ${page.totalPages}?'am-disabled':''"><a style="padding: 9px 12px; position: relative; top: 1px;" href="javascript:;">》</a></li>
+				</ul>
+			</div>
+        </div>
+        
+
+      </div>
+    </div>
+
+  </div>
+  <!-- content end -->
+  
+  </div>
+<!-- admin-main end -->
+
+ <div th:replace="@{adminTpl/comm/foot}"></div>
+ 
+ </body>
+<script th:inline="javascript">
+/*<![CDATA[>*/
+   $(function(){
+	    var total = [[${page.totalPages}]];
+	    var current = [[${page.currentPage}]];
+	    $(".am-pagination").on("click",".page",function(){
+	    	//console.log([[@{/app/findApps}]]+"?currentPage="+($(this).find("i").html()-1) );
+	    	window.location.href = [[@{/admin/findWebUser}]]+"?currentPage="+($(this).find("i").html()-1);
+	    });
+	    $(".am-pagination li").first().click(function(){
+	    	console.log(current);
+	    	if(current != 0){
+	    		current--;
+	    		window.location.href = [[@{/admin/findWebUser}]]+"?currentPage="+current;
+	    	}
+	    });
+		$(".am-pagination li").last().click(function(){
+			console.log(current);
+			if(current < (total-1)){
+				current++;
+	    		window.location.href = [[@{/admin/findWebUser}]]+"?currentPage="+current;
+	    	}
+	    });
+		
+		$(document)
+		.on("click", ".app-deluser",function(){ //删除用户
+			var pd=confirm("是否删除该用户？");
+			if(!pd){
+				return false;
+			}
+			var userId = $(this).attr("data-id");
+			$.ajax({
+				url: '/admin/deleteWebUser',
+				type: 'POST',
+				dataType: 'json',
+				data: {userId: userId},
+			})
+			.done(function() {
+				//console.log("success");
+				alert("删除成功！");
+				location.reload();
+			})
+			.fail(function() {
+				console.log("error");
+			})
+			.always(function() {
+				//console.log("complete");
+			});
+		})
+		.on('click', '.app-repassword', function(event) { //重置密码
+			var pd=confirm("是否重置该用户？");
+			if(!pd){
+				return false;
+			}
+			var userId = $(this).attr("data-id");
+			$.ajax({
+				url: '/admin/resetPassword',
+				type: 'POST',
+				dataType: 'json',
+				data: {userId: userId},
+			})
+			.done(function() {
+				//console.log("success");
+				alert("重置密码成功！初始密码123456");
+			})
+			.fail(function() {
+				console.log("error");
+			})
+			.always(function() {
+				//console.log("complete");
+			});
+		});;
+   });
+/*]]>*/   
+</script>
+</html>

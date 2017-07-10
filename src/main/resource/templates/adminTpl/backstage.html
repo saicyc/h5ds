@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+<meta charset="UTF-8"/>
+<title>Insert title here</title>
+<script th:src="@{/publicStatic/script/library/assets/js/jquery.min.js}"></script>
+<script th:src="@{/publicStatic/script/jqueryUpload/jquery.ui.widget.js}"></script>
+<script th:src="@{/publicStatic/script/jqueryUpload/jquery.iframe-transport.js}"></script>
+<script th:src="@{/publicStatic/script/jqueryUpload/jquery.fileupload.js}"></script>
+</head>
+<body>
+	<span>创建素材类别</span><input id="sourceTypeName" /><input id="addSourceType" type="button" value="+添加"/>
+	<div>
+	</div>
+</body>
+<script th:inline="javascript">
+/*<![CDATA[>*/
+    $(function(){
+		//上传文件
+    	$('#fileuploads').fileupload({
+   	       dataType: 'json',
+   	       formData:{sourseTypeId:"1"},
+   	       done: function (e, data) {
+   	      		
+   	       }
+    	});
+		//创建素材类别
+		$("#addSourceType").click(function(){
+			$.post("/admin/addSourceType",{sourceTypeName:$("#sourceTypeName").val()},function(data){
+				alert(data);
+				location.reload();
+			});
+		});
+		//查询素材的类别
+		$
+    });
+/*]]>*/          
+</script>
+</html>
