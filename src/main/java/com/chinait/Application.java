@@ -42,12 +42,12 @@ public class Application {
     public static void main(String[] args) throws Exception {
     	
     	
-    	
+    	ApplicationContext ctx = SpringApplication.run(Application.class, args);
     	
     	
     	
     	/*if(Protect.getProtect()){*/
-    		//ApplicationContext ctx = SpringApplication.run(Application.class, args);
+    		//
     		//init(ctx);
     	/*}else{
     		throw new Exception("请在h5ds注册！");
